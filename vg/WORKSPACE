@@ -1,0 +1,690 @@
+workspace(name="vg")
+
+# load the scala rules and toolchains
+rules_scala_version="76d4ab9f855f78113ee5990a84b0ad55d2417e4a" # update this as needed
+rules_docker_version="4d49182a85c745065e621c145238c5e9420ed91b" #update this as needed
+
+http_archive(
+	name = "io_bazel_rules_scala",
+  url = "https://github.com/bazelbuild/rules_scala/archive/%s.zip"%rules_scala_version,
+  type = "zip",
+  strip_prefix= "rules_scala-%s" % rules_scala_version
+)
+
+load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
+load("@io_bazel_rules_scala//scala:scala_cross_version.bzl", "scala_mvn_artifact")
+
+scala_repositories()
+register_toolchains("//toolchains:default_scala_toolchain")
+
+
+## Load the scala docker rules
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    url = "https://github.com/bazelbuild/rules_docker/archive/%s.zip"% rules_docker_version,
+    type="zip",
+    strip_prefix="rules_docker-%s" % rules_docker_version
+)
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+    container_repositories = "repositories",
+)
+
+# This is NOT needed when going through the language lang_image
+# "repositories" function(s).
+container_repositories()
+
+http_jar(
+	name="mxnet",
+	url="file:///Users/bpatterson/code/ml-playground/lib/mxnet-full_2.11-linux-x86_64-gpu-1.3.0-SNAPSHOT.jar"
+)
+
+#### SPARK 2.31 dependencies
+maven_jar(
+	name="aopalliance_aopalliance",
+	artifact="aopalliance:aopalliance:1.0",
+)
+maven_jar(
+	name="com_carrotsearch_hppc",
+	artifact="com.carrotsearch:hppc:0.7.2",
+)
+maven_jar(
+	name="com_clearspring_analytics_stream",
+	artifact="com.clearspring.analytics:stream:2.7.0",
+)
+maven_jar(
+	name="com_esotericsoftware_kryo_shaded",
+	artifact="com.esotericsoftware:kryo-shaded:3.0.3",
+)
+maven_jar(
+	name="com_esotericsoftware_minlog",
+	artifact="com.esotericsoftware:minlog:1.3.0",
+)
+maven_jar(
+	name="com_fasterxml_jackson_core_jackson_annotations",
+	artifact="com.fasterxml.jackson.core:jackson-annotations:2.6.7",
+)
+maven_jar(
+	name="com_fasterxml_jackson_core_jackson_core",
+	artifact="com.fasterxml.jackson.core:jackson-core:2.7.9",
+)
+maven_jar(
+	name="com_fasterxml_jackson_core_jackson_databind",
+	artifact="com.fasterxml.jackson.core:jackson-databind:2.6.7.1",
+)
+maven_jar(
+	name="com_fasterxml_jackson_module_jackson_module_paranamer",
+	artifact="com.fasterxml.jackson.module:jackson-module-paranamer:2.7.9",
+)
+maven_jar(
+	name="com_fasterxml_jackson_module_jackson_module_scala",
+	artifact=scala_mvn_artifact("com.fasterxml.jackson.module:jackson-module-scala:2.6.7.1"),
+)
+maven_jar(
+	name="com_github_luben_zstd_jni",
+	artifact="com.github.luben:zstd-jni:1.3.2-2",
+)
+maven_jar(
+	name="com_google_code_findbugs_jsr305",
+	artifact="com.google.code.findbugs:jsr305:3.0.2",
+)
+maven_jar(
+	name="com_google_code_gson_gson",
+	artifact="com.google.code.gson:gson:2.2.4",
+)
+maven_jar(
+	name="com_google_guava_guava",
+	artifact="com.google.guava:guava:11.0.2",
+)
+maven_jar(
+	name="com_google_inject_guice",
+	artifact="com.google.inject:guice:3.0",
+)
+maven_jar(
+	name="com_google_protobuf_protobuf_java",
+	artifact="com.google.protobuf:protobuf-java:2.5.0",
+)
+maven_jar(
+	name="com_jamesmurty_utils_java_xmlbuilder",
+	artifact="com.jamesmurty.utils:java-xmlbuilder:1.1",
+)
+maven_jar(
+	name="com_ning_compress_lzf",
+	artifact="com.ning:compress-lzf:1.0.3",
+)
+maven_jar(
+	name="com_thoughtworks_paranamer_paranamer",
+	artifact="com.thoughtworks.paranamer:paranamer:2.8",
+)
+maven_jar(
+	name="com_twitter_chill_java",
+	artifact="com.twitter:chill-java:0.8.4",
+)
+maven_jar(
+	name="com_twitter_chill",
+	artifact=scala_mvn_artifact("com.twitter:chill:0.8.4"),
+)
+maven_jar(
+	name="com_univocity_univocity_parsers",
+	artifact="com.univocity:univocity-parsers:2.5.9",
+)
+maven_jar(
+	name="com_vlkan_flatbuffers",
+	artifact="com.vlkan:flatbuffers:1.2.0-3f79e055",
+)
+maven_jar(
+	name="commons_beanutils_commons_beanutils",
+	artifact="commons-beanutils:commons-beanutils:1.7.0",
+)
+maven_jar(
+	name="commons_beanutils_commons_beanutils_core",
+	artifact="commons-beanutils:commons-beanutils-core:1.8.0",
+)
+maven_jar(
+	name="commons_cli_commons_cli",
+	artifact="commons-cli:commons-cli:1.2",
+)
+maven_jar(
+	name="commons_codec_commons_codec",
+	artifact="commons-codec:commons-codec:1.11",
+)
+maven_jar(
+	name="commons_collections_commons_collections",
+	artifact="commons-collections:commons-collections:3.2.2",
+)
+maven_jar(
+	name="commons_configuration_commons_configuration",
+	artifact="commons-configuration:commons-configuration:1.6",
+)
+maven_jar(
+	name="commons_digester_commons_digester",
+	artifact="commons-digester:commons-digester:1.8",
+)
+maven_jar(
+	name="commons_httpclient_commons_httpclient",
+	artifact="commons-httpclient:commons-httpclient:3.1",
+)
+maven_jar(
+	name="commons_io_commons_io",
+	artifact="commons-io:commons-io:2.4",
+)
+maven_jar(
+	name="commons_lang_commons_lang",
+	artifact="commons-lang:commons-lang:2.6",
+)
+maven_jar(
+	name="commons_net_commons_net",
+	artifact="commons-net:commons-net:2.2",
+)
+maven_jar(
+	name="io_airlift_aircompressor",
+	artifact="io.airlift:aircompressor:0.8",
+)
+maven_jar(
+	name="io_dropwizard_metrics_metrics_core",
+	artifact="io.dropwizard.metrics:metrics-core:3.1.5",
+)
+maven_jar(
+	name="io_dropwizard_metrics_metrics_graphite",
+	artifact="io.dropwizard.metrics:metrics-graphite:3.1.5",
+)
+maven_jar(
+	name="io_dropwizard_metrics_metrics_json",
+	artifact="io.dropwizard.metrics:metrics-json:3.1.5",
+)
+maven_jar(
+	name="io_dropwizard_metrics_metrics_jvm",
+	artifact="io.dropwizard.metrics:metrics-jvm:3.1.5",
+)
+maven_jar(
+	name="io_netty_netty",
+	artifact="io.netty:netty:3.9.9.Final",
+)
+maven_jar(
+	name="io_netty_netty_all",
+	artifact="io.netty:netty-all:4.1.17.Final",
+)
+maven_jar(
+	name="javax_activation_activation",
+	artifact="javax.activation:activation:1.1.1",
+)
+maven_jar(
+	name="javax_annotation_javax_annotation_api",
+	artifact="javax.annotation:javax.annotation-api:1.2",
+)
+maven_jar(
+	name="javax_inject_javax_inject",
+	artifact="javax.inject:javax.inject:1",
+)
+maven_jar(
+	name="javax_servlet_javax_servlet_api",
+	artifact="javax.servlet:javax.servlet-api:3.1.0",
+)
+maven_jar(
+	name="javax_validation_validation_api",
+	artifact="javax.validation:validation-api:1.1.0.Final",
+)
+maven_jar(
+	name="javax_ws_rs_javax_ws_rs_api",
+	artifact="javax.ws.rs:javax.ws.rs-api:2.0.1",
+)
+maven_jar(
+	name="javax_xml_bind_jaxb_api",
+	artifact="javax.xml.bind:jaxb-api:2.2.2",
+)
+maven_jar(
+	name="javax_xml_stream_stax_api",
+	artifact="javax.xml.stream:stax-api:1.0-2",
+)
+maven_jar(
+	name="jline_jline",
+	artifact="jline:jline:0.9.94",
+)
+maven_jar(
+	name="joda_time_joda_time",
+	artifact="joda-time:joda-time:2.9.9",
+)
+maven_jar(
+	name="log4j_log4j",
+	artifact="log4j:log4j:1.2.17",
+)
+maven_jar(
+	name="net_iharder_base64",
+	artifact="net.iharder:base64:2.3.8",
+)
+maven_jar(
+	name="net_java_dev_jets3t_jets3t",
+	artifact="net.java.dev.jets3t:jets3t:0.9.4",
+)
+maven_jar(
+	name="net_razorvine_pyrolite",
+	artifact="net.razorvine:pyrolite:4.13",
+)
+maven_jar(
+	name="net_sf_py4j_py4j",
+	artifact="net.sf.py4j:py4j:0.10.7",
+)
+maven_jar(
+	name="org_antlr_antlr4_runtime",
+	artifact="org.antlr:antlr4-runtime:4.7",
+)
+maven_jar(
+	name="org_apache_arrow_arrow_format",
+	artifact="org.apache.arrow:arrow-format:0.8.0",
+)
+maven_jar(
+	name="org_apache_arrow_arrow_memory",
+	artifact="org.apache.arrow:arrow-memory:0.8.0",
+)
+maven_jar(
+	name="org_apache_arrow_arrow_vector",
+	artifact="org.apache.arrow:arrow-vector:0.8.0",
+)
+maven_jar(
+	name="org_apache_avro_avro",
+	artifact="org.apache.avro:avro:1.7.7",
+)
+maven_jar(
+	name="org_apache_avro_avro_ipc",
+	artifact="org.apache.avro:avro-ipc:1.7.7",
+)
+maven_jar(
+	name="org_apache_avro_avro_mapred",
+	artifact="org.apache.avro:avro-mapred:1.7.7",
+)
+maven_jar(
+	name="org_apache_commons_commons_compress",
+	artifact="org.apache.commons:commons-compress:1.4.1",
+)
+maven_jar(
+	name="org_apache_commons_commons_crypto",
+	artifact="org.apache.commons:commons-crypto:1.0.0",
+)
+maven_jar(
+	name="org_apache_commons_commons_lang3",
+	artifact="org.apache.commons:commons-lang3:3.5",
+)
+maven_jar(
+	name="org_apache_commons_commons_math3",
+	artifact="org.apache.commons:commons-math3:3.4.1",
+)
+maven_jar(
+	name="org_apache_curator_curator_client",
+	artifact="org.apache.curator:curator-client:2.6.0",
+)
+maven_jar(
+	name="org_apache_curator_curator_framework",
+	artifact="org.apache.curator:curator-framework:2.6.0",
+)
+maven_jar(
+	name="org_apache_curator_curator_recipes",
+	artifact="org.apache.curator:curator-recipes:2.6.0",
+)
+maven_jar(
+	name="org_apache_directory_api_api_asn1_api",
+	artifact="org.apache.directory.api:api-asn1-api:1.0.0-M20",
+)
+maven_jar(
+	name="org_apache_directory_api_api_util",
+	artifact="org.apache.directory.api:api-util:1.0.0-M20",
+)
+maven_jar(
+	name="org_apache_directory_server_apacheds_i18n",
+	artifact="org.apache.directory.server:apacheds-i18n:2.0.0-M15",
+)
+maven_jar(
+	name="org_apache_directory_server_apacheds_kerberos_codec",
+	artifact="org.apache.directory.server:apacheds-kerberos-codec:2.0.0-M15",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_annotations",
+	artifact="org.apache.hadoop:hadoop-annotations:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_auth",
+	artifact="org.apache.hadoop:hadoop-auth:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_client",
+	artifact="org.apache.hadoop:hadoop-client:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_common",
+	artifact="org.apache.hadoop:hadoop-common:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_hdfs",
+	artifact="org.apache.hadoop:hadoop-hdfs:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_mapreduce_client_app",
+	artifact="org.apache.hadoop:hadoop-mapreduce-client-app:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_mapreduce_client_common",
+	artifact="org.apache.hadoop:hadoop-mapreduce-client-common:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_mapreduce_client_core",
+	artifact="org.apache.hadoop:hadoop-mapreduce-client-core:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_mapreduce_client_jobclient",
+	artifact="org.apache.hadoop:hadoop-mapreduce-client-jobclient:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_mapreduce_client_shuffle",
+	artifact="org.apache.hadoop:hadoop-mapreduce-client-shuffle:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_yarn_api",
+	artifact="org.apache.hadoop:hadoop-yarn-api:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_yarn_client",
+	artifact="org.apache.hadoop:hadoop-yarn-client:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_yarn_common",
+	artifact="org.apache.hadoop:hadoop-yarn-common:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_yarn_server_common",
+	artifact="org.apache.hadoop:hadoop-yarn-server-common:2.6.5",
+)
+maven_jar(
+	name="org_apache_hadoop_hadoop_yarn_server_nodemanager",
+	artifact="org.apache.hadoop:hadoop-yarn-server-nodemanager:2.6.5",
+)
+maven_jar(
+	name="org_apache_httpcomponents_httpclient",
+	artifact="org.apache.httpcomponents:httpclient:4.5",
+)
+maven_jar(
+	name="org_apache_httpcomponents_httpcore",
+	artifact="org.apache.httpcomponents:httpcore:4.4.1",
+)
+maven_jar(
+	name="org_apache_ivy_ivy",
+	artifact="org.apache.ivy:ivy:2.4.0",
+)
+maven_jar(
+	name="org_apache_orc_orc_core",
+	artifact="org.apache.orc:orc-core:1.4.4",
+)
+maven_jar(
+	name="org_apache_orc_orc_mapreduce",
+	artifact="org.apache.orc:orc-mapreduce:1.4.4",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_column",
+	artifact="org.apache.parquet:parquet-column:1.8.3",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_common",
+	artifact="org.apache.parquet:parquet-common:1.8.3",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_encoding",
+	artifact="org.apache.parquet:parquet-encoding:1.8.3",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_format",
+	artifact="org.apache.parquet:parquet-format:2.3.1",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_hadoop",
+	artifact="org.apache.parquet:parquet-hadoop:1.8.3",
+)
+maven_jar(
+	name="org_apache_parquet_parquet_jackson",
+	artifact="org.apache.parquet:parquet-jackson:1.8.3",
+)
+maven_jar(
+	name="org_apache_spark_spark_catalyst",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-catalyst:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_core",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-core:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_kvstore",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-kvstore:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_launcher",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-launcher:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_network_common",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-network-common:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_network_shuffle",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-network-shuffle:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_sketch",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-sketch:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_sql",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-sql:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_tags",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-tags:2.3.1"),
+)
+maven_jar(
+	name="org_apache_spark_spark_unsafe",
+	artifact=scala_mvn_artifact("org.apache.spark:spark-unsafe:2.3.1"),
+)
+maven_jar(
+	name="org_apache_xbean_xbean_asm5_shaded",
+	artifact="org.apache.xbean:xbean-asm5-shaded:4.4",
+)
+maven_jar(
+	name="org_apache_zookeeper_zookeeper",
+	artifact="org.apache.zookeeper:zookeeper:3.4.6",
+)
+maven_jar(
+	name="org_bouncycastle_bcprov_jdk15on",
+	artifact="org.bouncycastle:bcprov-jdk15on:1.52",
+)
+maven_jar(
+	name="org_codehaus_jackson_jackson_core_asl",
+	artifact="org.codehaus.jackson:jackson-core-asl:1.9.13",
+)
+maven_jar(
+	name="org_codehaus_jackson_jackson_jaxrs",
+	artifact="org.codehaus.jackson:jackson-jaxrs:1.9.13",
+)
+maven_jar(
+	name="org_codehaus_jackson_jackson_mapper_asl",
+	artifact="org.codehaus.jackson:jackson-mapper-asl:1.9.13",
+)
+maven_jar(
+	name="org_codehaus_jackson_jackson_xc",
+	artifact="org.codehaus.jackson:jackson-xc:1.9.13",
+)
+maven_jar(
+	name="org_codehaus_janino_commons_compiler",
+	artifact="org.codehaus.janino:commons-compiler:3.0.8",
+)
+maven_jar(
+	name="org_codehaus_janino_janino",
+	artifact="org.codehaus.janino:janino:3.0.8",
+)
+maven_jar(
+	name="org_codehaus_jettison_jettison",
+	artifact="org.codehaus.jettison:jettison:1.1",
+)
+maven_jar(
+	name="org_fusesource_leveldbjni_leveldbjni_all",
+	artifact="org.fusesource.leveldbjni:leveldbjni-all:1.8",
+)
+maven_jar(
+	name="org_glassfish_hk2_hk2_api",
+	artifact="org.glassfish.hk2:hk2-api:2.4.0-b34",
+)
+maven_jar(
+	name="org_glassfish_hk2_hk2_locator",
+	artifact="org.glassfish.hk2:hk2-locator:2.4.0-b34",
+)
+maven_jar(
+	name="org_glassfish_hk2_hk2_utils",
+	artifact="org.glassfish.hk2:hk2-utils:2.4.0-b34",
+)
+maven_jar(
+	name="org_glassfish_hk2_osgi_resource_locator",
+	artifact="org.glassfish.hk2:osgi-resource-locator:1.0.1",
+)
+maven_jar(
+	name="org_glassfish_hk2_external_aopalliance_repackaged",
+	artifact="org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b34",
+)
+maven_jar(
+	name="org_glassfish_hk2_external_javax_inject",
+	artifact="org.glassfish.hk2.external:javax.inject:2.4.0-b34",
+)
+maven_jar(
+	name="org_glassfish_jersey_bundles_repackaged_jersey_guava",
+	artifact="org.glassfish.jersey.bundles.repackaged:jersey-guava:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_containers_jersey_container_servlet",
+	artifact="org.glassfish.jersey.containers:jersey-container-servlet:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_containers_jersey_container_servlet_core",
+	artifact="org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_core_jersey_client",
+	artifact="org.glassfish.jersey.core:jersey-client:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_core_jersey_common",
+	artifact="org.glassfish.jersey.core:jersey-common:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_core_jersey_server",
+	artifact="org.glassfish.jersey.core:jersey-server:2.22.2",
+)
+maven_jar(
+	name="org_glassfish_jersey_media_jersey_media_jaxb",
+	artifact="org.glassfish.jersey.media:jersey-media-jaxb:2.22.2",
+)
+maven_jar(
+	name="org_htrace_htrace_core",
+	artifact="org.htrace:htrace-core:3.0.4",
+)
+maven_jar(
+	name="org_javassist_javassist",
+	artifact="org.javassist:javassist:3.18.1-GA",
+)
+maven_jar(
+	name="org_json4s_json4s_ast",
+	artifact=scala_mvn_artifact("org.json4s:json4s-ast:3.2.11"),
+)
+maven_jar(
+	name="org_json4s_json4s_core",
+	artifact=scala_mvn_artifact("org.json4s:json4s-core:3.2.11"),
+)
+maven_jar(
+	name="org_json4s_json4s_jackson",
+	artifact=scala_mvn_artifact("org.json4s:json4s-jackson:3.2.11"),
+)
+maven_jar(
+	name="org_lz4_lz4_java",
+	artifact="org.lz4:lz4-java:1.4.0",
+)
+maven_jar(
+	name="org_mortbay_jetty_jetty_util",
+	artifact="org.mortbay.jetty:jetty-util:6.1.26",
+)
+maven_jar(
+	name="org_objenesis_objenesis",
+	artifact="org.objenesis:objenesis:2.1",
+)
+maven_jar(
+	name="org_roaringbitmap_RoaringBitmap",
+	artifact="org.roaringbitmap:RoaringBitmap:0.5.11",
+)
+maven_jar(
+	name="org_scala_lang_scala_compiler",
+	artifact="org.scala-lang:scala-compiler:2.11.8",
+)
+maven_jar(
+	name="org_scala_lang_scala_reflect",
+	artifact="org.scala-lang:scala-reflect:2.11.8",
+)
+maven_jar(
+	name="org_scala_lang_scalap",
+	artifact="org.scala-lang:scalap:2.11.8",
+)
+maven_jar(
+	name="org_scala_lang_modules_scala_parser_combinators",
+	artifact=scala_mvn_artifact("org.scala-lang.modules:scala-parser-combinators:1.0.4"),
+)
+maven_jar(
+	name="org_scala_lang_modules_scala_xml",
+	artifact=scala_mvn_artifact("org.scala-lang.modules:scala-xml:1.0.4"),
+)
+maven_jar(
+	name="org_slf4j_jcl_over_slf4j",
+	artifact="org.slf4j:jcl-over-slf4j:1.7.16",
+)
+maven_jar(
+	name="org_slf4j_jul_to_slf4j",
+	artifact="org.slf4j:jul-to-slf4j:1.7.16",
+)
+maven_jar(
+	name="org_slf4j_slf4j_api",
+	artifact="org.slf4j:slf4j-api:1.7.25",
+)
+maven_jar(
+	name="org_slf4j_slf4j_log4j12",
+	artifact="org.slf4j:slf4j-log4j12:1.7.16",
+)
+maven_jar(
+	name="org_sonatype_sisu_inject_cglib",
+	artifact="org.sonatype.sisu.inject:cglib:2.2.1-v20090111",
+)
+maven_jar(
+	name="org_spark_project_spark_unused",
+	artifact="org.spark-project.spark:unused:1.0.0",
+)
+maven_jar(
+	name="org_tukaani_xz",
+	artifact="org.tukaani:xz:1.0",
+)
+maven_jar(
+	name="org_xerial_snappy_snappy_java",
+	artifact="org.xerial.snappy:snappy-java:1.1.2.6",
+)
+maven_jar(
+	name="oro_oro",
+	artifact="oro:oro:2.0.8",
+)
+maven_jar(
+	name="xerces_xercesImpl",
+	artifact="xerces:xercesImpl:2.9.1",
+)
+maven_jar(
+	name="xml_apis_xml_apis",
+	artifact="xml-apis:xml-apis:1.3.04",
+)
+maven_jar(
+	name="xmlenc_xmlenc",
+	artifact="xmlenc:xmlenc:0.52",
+)
+
+
+
+
+
