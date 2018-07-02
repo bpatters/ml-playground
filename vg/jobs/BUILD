@@ -3,7 +3,7 @@ load("@io_bazel_rules_scala//scala:scala_import.bzl", "scala_import")
 
 
 scala_import(
-    name="spark",
+    name="spark_libs",
     jars=[
 	"@aopalliance_aopalliance//jar",
 	"@com_carrotsearch_hppc//jar",
@@ -169,25 +169,19 @@ scala_import(
 )
 
 java_library(
-    name="runtime_deps",
+    name="spark_deps",
+    visibility=[
+        "//jobs:__subpackages__"
+    ],
     srcs=glob(["java/*.java"]),
     exports=[
-        ":spark",
+        ":spark_libs",
         "@mxnet//jar",
     ],
     deps=[
-        ":spark",
+        ":spark_libs",
         "@mxnet//jar",
     ],
     neverlink=1
 )
 
-scala_library(
-	name="main",
-	srcs=glob([
-		"scala/*.scala"
-		]),
-	deps=[
-	     ":runtime_deps",
-	],
-)

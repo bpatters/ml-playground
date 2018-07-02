@@ -1,4 +1,4 @@
-package src.main.java;
+package jobs.java;
 
 public class Nothing {
 }

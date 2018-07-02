@@ -1,5 +1,7 @@
 workspace(name="vg")
 
+load("//local_settings:variables.bzl", "MXNET_LIB")
+
 # load the scala rules and toolchains
 rules_scala_version="76d4ab9f855f78113ee5990a84b0ad55d2417e4a" # update this as needed
 rules_docker_version="4d49182a85c745065e621c145238c5e9420ed91b" #update this as needed
@@ -37,9 +39,10 @@ load(
 # "repositories" function(s).
 container_repositories()
 
+
 http_jar(
 	name="mxnet",
-	url="file:///Users/bpatterson/code/ml-playground/lib/mxnet-full_2.11-linux-x86_64-gpu-1.3.0-SNAPSHOT.jar"
+	url="file://{}".format(MXNET_LIB)
 )
 
 #### SPARK 2.31 dependencies
